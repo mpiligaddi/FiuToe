@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "418034460394",
+    "project_id": "fiutoe",
+    "storage_bucket": "fiutoe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418034460394:android:699ec326fc1d2108989993",
+        "android_client_info": {
+          "package_name": "com.codingstuff.fiutoe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIjqcXvJAauIxwFMg9pwR9IOdhKl51ZnA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418034460394:android:2f15b836b14d3ca6989993",
+        "android_client_info": {
+          "package_name": "com.example.fiutoe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIjqcXvJAauIxwFMg9pwR9IOdhKl51ZnA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
