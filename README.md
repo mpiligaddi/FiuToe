@@ -1,2 +1,2 @@
 # FiuToe
-Trabajo Practico FiuToe - Teoria del Lenguaje - Facultad de Ingenieria UBA 
+Trabajo Practico para la materia Teoria del Lenguaje - 1er Cuatrimestre 2023 - Facultad de Ingenieria UBA 
