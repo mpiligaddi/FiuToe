@@ -25,6 +25,10 @@
             android:name="com.codingstuff.fiutoe.MainActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name="com.codingstuff.fiutoe.AddPlayersActivity"
+            android:exported="true">
+        </activity>
     </application>
 
 </manifest>
