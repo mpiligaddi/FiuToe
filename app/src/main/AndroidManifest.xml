@@ -22,7 +22,7 @@
         </activity>
         <activity
             android:name="com.codingstuff.fiutoe.SignUpActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name="com.codingstuff.fiutoe.CodeGameActivity"
             android:exported="true">

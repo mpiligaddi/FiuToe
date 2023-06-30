@@ -13,125 +13,116 @@ import com.google.firebase.database.*
 import kotlin.collections.ArrayList
 import kotlin.system.exitProcess
 
-var isMyMove = isCodeMaker;
-var playerTurn = true
+var isMyMove = isCodeMaker; // Arranca el jugador que creo el codigo
 
 class GameActivity : AppCompatActivity() {
+    var player1Count = 0
+    var player2Count = 0
+    var player1 = ArrayList<Int>()
+    var player2 = ArrayList<Int>()
+    var emptyCells = ArrayList<Int>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-        findViewById<Button>(R.id.button110).setOnClickListener {
+
+        findViewById<Button>(R.id.resetButton).setOnClickListener {
             reset()
         }
+
         FirebaseDatabase.getInstance().reference.child("data").child(code).addChildEventListener(object : ChildEventListener{
             override fun onCancelled(error: DatabaseError) {
-                //not implemented
             }
-
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                //not implemented
             }
-
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                //not implemented
             }
-
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 var data = snapshot.value
-                if(isMyMove==true){
+                if(isMyMove) {
                     isMyMove = false
-                    moveonline(data.toString() , isMyMove)
+                    moveOnline(data.toString(),isMyMove)
                 }
-                else{
+                else {
                     isMyMove = true
-                    moveonline(data.toString() , isMyMove)
+                    moveOnline(data.toString(),isMyMove)
                 }
             }
             override fun onChildRemoved(snapshot: DataSnapshot) {
                 reset()
-                errorMsg("Game Reset")
             }
-
         })
     }
 
-    var player1Count = 0
-    var player2Count = 0
-    fun clickfun(view:View)
-    {
+    fun clickCell(view:View) {
         if(isMyMove) {
-            val but = view as Button
+            val button = view as Button
             var cellOnline = 0
-            when (but.id) {
-                R.id.button11 -> cellOnline = 1
-                R.id.button12 -> cellOnline = 2
-                R.id.button13 -> cellOnline = 3
-                R.id.button14 -> cellOnline = 4
-                R.id.button15 -> cellOnline = 5
-                R.id.button16 -> cellOnline = 6
-                R.id.button17 -> cellOnline = 7
-                R.id.button18 -> cellOnline = 8
-                R.id.button19 -> cellOnline = 9
-                else -> {cellOnline=0}
-
+            cellOnline = when (button.id) {
+                R.id.button1 -> 1
+                R.id.button2 -> 2
+                R.id.button3 -> 3
+                R.id.button4 -> 4
+                R.id.button5 -> 5
+                R.id.button6 -> 6
+                R.id.button7 -> 7
+                R.id.button8 -> 8
+                R.id.button9 -> 9
+                else -> 0
             }
-            playerTurn = false;
-            Handler().postDelayed(Runnable { playerTurn = true } , 600)
-            playnow(but, cellOnline)
-            updateDatabase(cellOnline);
-
+            playNow(button, cellOnline)
+            updateDatabase(cellOnline)
         }
         else{
-            Toast.makeText(this , "Wait for your turn" , Toast.LENGTH_LONG).show()
+            Toast.makeText(this , "Wait for your turn, please" , Toast.LENGTH_LONG).show()
         }
     }
-    var player1 = ArrayList<Int>()
-    var player2 = ArrayList<Int>()
-    var emptyCells = ArrayList<Int>()
-    var activeUser = 1
-    fun playnow(buttonSelected:Button , currCell:Int) {
+
+    // Jugada propia
+    private fun playNow(buttonSelected:Button, currentCell:Int) {
         buttonSelected.text = "X"
-        emptyCells.remove(currCell)
-        findViewById<TextView>(R.id.textView3).text = "Turn : Player 2"
+        emptyCells.remove(currentCell) //creo que se puede sacar
+        findViewById<TextView>(R.id.playerTurnText).text = "Turn : Player 2"
         buttonSelected.setTextColor(Color.parseColor("#EC0C0C"))
-        player1.add(currCell)
-        emptyCells.add(currCell)
+        player1.add(currentCell)
+        emptyCells.add(currentCell)
         buttonSelected.isEnabled = false
-        checkwinner()
+        checkWinner()
     }
 
-    fun moveonline(data : String , move : Boolean){
+    // Jugada del oponente
+    fun moveOnline(data : String , move : Boolean){
         if(move) {
-            var buttonselected: Button?
+            var buttonselected: Button? = findViewById<Button>(R.id.button1)
             buttonselected = when (data.toInt()) {
-                1 -> findViewById<Button>(R.id.button11)
-                2 -> findViewById<Button>(R.id.button12)
-                3 -> findViewById<Button>(R.id.button13)
-                4 -> findViewById<Button>(R.id.button14)
-                5 -> findViewById<Button>(R.id.button15)
-                6 -> findViewById<Button>(R.id.button16)
-                7 -> findViewById<Button>(R.id.button17)
-                8 -> findViewById<Button>(R.id.button18)
-                9 -> findViewById<Button>(R.id.button19)
+                1 -> findViewById<Button>(R.id.button1)
+                2 -> findViewById<Button>(R.id.button2)
+                3 -> findViewById<Button>(R.id.button3)
+                4 -> findViewById<Button>(R.id.button4)
+                5 -> findViewById<Button>(R.id.button5)
+                6 -> findViewById<Button>(R.id.button6)
+                7 -> findViewById<Button>(R.id.button7)
+                8 -> findViewById<Button>(R.id.button8)
+                9 -> findViewById<Button>(R.id.button9)
                 else -> {
-                    findViewById<Button>(R.id.button11)
+                    findViewById<Button>(R.id.button1)
                 }
             }
-            buttonselected.text = "O"
-            findViewById<TextView>(R.id.textView3).text = "Turn : Player 1"
+            buttonselected.text = "⬤"
+            findViewById<TextView>(R.id.playerTurnText).text = "Turn : Player 1"
             buttonselected.setTextColor(Color.parseColor("#D22BB804"))
             player2.add(data.toInt())
             emptyCells.add(data.toInt())
             buttonselected.isEnabled = false
-            checkwinner()
+            checkWinner()
         }
     }
 
-    fun updateDatabase(cellId : Int) {
+    private fun updateDatabase(cellId : Int) {
         FirebaseDatabase.getInstance().reference.child("data").child(code).push().setValue(cellId);
     }
 
-    fun checkwinner():Int {
+    private fun checkWinner():Int {
         if((player1.contains(1) && player1.contains(2) && player1.contains(3) ) || (player1.contains(1) && player1.contains(4) && player1.contains(7))||
             (player1.contains(3) && player1.contains(6) && player1.contains(9)) || (player1.contains(7) && player1.contains(8) && player1.contains(9))||
             (player1.contains(4)&&player1.contains(5)&&player1.contains(6)) || (player1.contains(1)&&player1.contains(5) && player1.contains(9))||
@@ -141,16 +132,15 @@ class GameActivity : AppCompatActivity() {
             disableReset()
             val build = AlertDialog.Builder(this)
             build.setTitle("Game Over")
-            build.setMessage("Player 1 Wins!!" + "\n\n" + "Do you want to play again")
-            build.setPositiveButton("Ok") { dialog, which ->
+            build.setMessage("Player 1 Wins")
+            build.setPositiveButton("Play again") { dialog, which ->
                 reset()
             }
             build.setNegativeButton("Exit") { dialog, which ->
                 removeCode()
                 exitProcess(1)
-
             }
-            Handler().postDelayed(Runnable { build.show() } , 2000)
+            build.show()
             return 1
         }
         else if((player2.contains(1) && player2.contains(2) && player2.contains(3) ) || (player2.contains(1) && player2.contains(4) && player2.contains(7))||
@@ -162,15 +152,15 @@ class GameActivity : AppCompatActivity() {
             disableReset()
             val build = AlertDialog.Builder(this)
             build.setTitle("Game Over")
-            build.setMessage("Player 2 Wins!!" + "\n\n" + "Do you want to play again")
-            build.setPositiveButton("Ok"){dialog, which ->
+            build.setMessage("Player 2 Wins")
+            build.setPositiveButton("Play again"){dialog, which ->
                 reset()
             }
             build.setNegativeButton("Exit"){dialog, which ->
                 removeCode()
                 exitProcess(1)
             }
-            Handler().postDelayed(Runnable { build.show() } , 2000)
+            build.show()
             return 1
         }
         else if(emptyCells.contains(1) && emptyCells.contains(2) && emptyCells.contains(3) && emptyCells.contains(4) && emptyCells.contains(5) && emptyCells.contains(6) && emptyCells.contains(7) &&
@@ -178,8 +168,8 @@ class GameActivity : AppCompatActivity() {
 
             val build = AlertDialog.Builder(this)
             build.setTitle("Game Draw")
-            build.setMessage("Nobody Wins" + "\n\n" + "Do you want to play again")
-            build.setPositiveButton("Ok"){dialog, which ->
+            build.setMessage("Nobody Wins")
+            build.setPositiveButton("Play again"){dialog, which ->
                 reset()
             }
             build.setNegativeButton("Exit"){dialog, which ->
@@ -196,64 +186,59 @@ class GameActivity : AppCompatActivity() {
         player1.clear()
         player2.clear()
         emptyCells.clear()
-        activeUser = 1;
         for(i in 1..9) {
-            var buttonselected : Button?
-            buttonselected = when(i){
-                1 -> findViewById<Button>(R.id.button11)
-                2 -> findViewById<Button>(R.id.button12)
-                3 -> findViewById<Button>(R.id.button13)
-                4 -> findViewById<Button>(R.id.button14)
-                5 -> findViewById<Button>(R.id.button15)
-                6 -> findViewById<Button>(R.id.button16)
-                7 -> findViewById<Button>(R.id.button17)
-                8 -> findViewById<Button>(R.id.button18)
-                9 -> findViewById<Button>(R.id.button19)
-                else -> {findViewById<Button>(R.id.button11)}
+            var buttonselected : Button? = findViewById<Button>(R.id.button1)
+            buttonselected = when(i) {
+                1 -> findViewById<Button>(R.id.button1)
+                2 -> findViewById<Button>(R.id.button2)
+                3 -> findViewById<Button>(R.id.button3)
+                4 -> findViewById<Button>(R.id.button4)
+                5 -> findViewById<Button>(R.id.button5)
+                6 -> findViewById<Button>(R.id.button6)
+                7 -> findViewById<Button>(R.id.button7)
+                8 -> findViewById<Button>(R.id.button8)
+                9 -> findViewById<Button>(R.id.button9)
+                else -> {findViewById<Button>(R.id.button1)}
             }
             buttonselected.isEnabled = true
             buttonselected.text = ""
-            findViewById<TextView>(R.id.textView).text = "Player1 : $player1Count"
-            findViewById<TextView>(R.id.textView2).text = "Player2 : $player2Count"
+            findViewById<TextView>(R.id.countWinsPlayer1Text).text = "Player1 : $player1Count"
+            findViewById<TextView>(R.id.countWinsPlayer2Text).text = "Player2 : $player2Count"
             isMyMove = isCodeMaker
-            //startActivity(Intent(this,ThirdPage::class.java))
             if(isCodeMaker){
                 FirebaseDatabase.getInstance().reference.child("data").child(code).removeValue()
             }
         }
     }
 
-    fun buttonDisable() {
+    private fun buttonDisable() {
         for(i in 1..9) {
             val buttonSelected = when(i) {
-                1 -> findViewById<Button>(R.id.button11)
-                2 -> findViewById<Button>(R.id.button12)
-                3 -> findViewById<Button>(R.id.button13)
-                4 -> findViewById<Button>(R.id.button14)
-                5 -> findViewById<Button>(R.id.button15)
-                6 -> findViewById<Button>(R.id.button16)
-                7 -> findViewById<Button>(R.id.button17)
-                8 -> findViewById<Button>(R.id.button18)
-                9 -> findViewById<Button>(R.id.button19)
-                else -> {findViewById<Button>(R.id.button11)}
+                1 -> findViewById<Button>(R.id.button1)
+                2 -> findViewById<Button>(R.id.button2)
+                3 -> findViewById<Button>(R.id.button3)
+                4 -> findViewById<Button>(R.id.button4)
+                5 -> findViewById<Button>(R.id.button5)
+                6 -> findViewById<Button>(R.id.button6)
+                7 -> findViewById<Button>(R.id.button7)
+                8 -> findViewById<Button>(R.id.button8)
+                9 -> findViewById<Button>(R.id.button9)
+                else -> {findViewById<Button>(R.id.button1)}
             }
-            if(buttonSelected.isEnabled == true)
+            if(buttonSelected.isEnabled)
                 buttonSelected.isEnabled = false
         }
     }
 
-    fun removeCode() {
+    private fun removeCode() {
         if(isCodeMaker) {
             FirebaseDatabase.getInstance().reference.child("codes").child(keyValue).removeValue()
         }
     }
 
-    fun errorMsg(value : String) {
-        Toast.makeText(this , value  , Toast.LENGTH_SHORT).show()
-    }
-    fun disableReset() {
-        findViewById<Button>(R.id.button110).isEnabled = false
-        Handler().postDelayed(Runnable { findViewById<Button>(R.id.button110).isEnabled = true } , 2200)
+    private fun disableReset() {
+        findViewById<Button>(R.id.resetButton).isEnabled = false
+        Handler().postDelayed(Runnable { findViewById<Button>(R.id.resetButton).isEnabled = true } , 2200)
     }
 
     override fun onBackPressed() {
