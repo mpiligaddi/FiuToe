@@ -12,7 +12,6 @@ import com.google.firebase.database.*
 var isCodeMaker = true;
 var code = "null";
 var codeFound = false
-var checkTemp = true
 var keyValue:String = "null"
 var playerOneName:String = "null"
 var playerTwoName:String = "null"
@@ -37,7 +36,6 @@ class CodeGameActivity : AppCompatActivity() {
                         Handler().postDelayed({
                             if(!codeAlreadyUsed){
                                 FirebaseDatabase.getInstance().reference.child("codes").push().setValue(code)
-                                checkTemp = false
                                 Handler().postDelayed({
                                     accepted()
                                 } , 300)
@@ -76,14 +74,14 @@ class CodeGameActivity : AppCompatActivity() {
             }
         }
     }
-    fun errorMsg(value : String) {
+    private fun errorMsg(value : String) {
         Toast.makeText(this , value  , Toast.LENGTH_SHORT).show()
     }
     fun accepted() {
         startActivity(Intent(this, GameActivity::class.java));
     }
     fun isValueAvailable(snapshot: DataSnapshot , code : String): Boolean {
-        var data = snapshot.children
+        var data = snapshot.children //me fijo si el codigo actual ya se ingreso y esta en codes
         data.forEach{
             var value = it.getValue().toString()
             if(value == code) {
